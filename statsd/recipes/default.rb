@@ -2,6 +2,26 @@
 include_recipe "nodejs"
 include_recipe "logrotate"
 
+case node["platform_family"]
+when "debian"
+  template "/etc/init/statsd.conf" do
+    mode "0644"
+    source "statsd.conf.erb"
+    variables(
+      :log_file         => node["statsd"]["log_file"],
+      :platform_version => node["platform_version"].to_f
+    )
+  end
+when "rhel","fedora"
+  template "/etc/init.d/statsd" do
+    mode "0755"
+    source "statsd.erb"
+    variables(
+      :log_file         => node["statsd"]["log_file"]
+    )
+  end
+end
+
 service "statsd" do
   case node["platform"]
   when "ubuntu"
@@ -35,27 +55,6 @@ template "#{node["statsd"]["conf_dir"]}/config.js" do
     :graphite_host  => node["statsd"]["graphite_host"]
   )
   notifies :restart, resources(:service => "statsd"), :delayed
-end
-
-
-case node["platform_family"]
-when "debian"
-  template "/etc/init/statsd.conf" do
-    mode "0644"
-    source "statsd.conf.erb"
-    variables(
-      :log_file         => node["statsd"]["log_file"],
-      :platform_version => node["platform_version"].to_f
-    )
-  end
-when "rhel","fedora"
-  template "/etc/init.d/statsd" do
-    mode "0755"
-    source "statsd.erb"
-    variables(
-      :log_file         => node["statsd"]["log_file"]
-    )
-  end
 end
 
 user "statsd" do
