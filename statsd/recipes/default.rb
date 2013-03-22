@@ -17,7 +17,7 @@ end
 git node["statsd"]["dir"] do
   repository node["statsd"]["repository"]
   action :sync
-  notifies :restart, resources(:service => "statsd")
+  notifies :restart, resources(:service => "statsd"), :delayed
 end
 
 directory node["statsd"]["conf_dir"] do
@@ -34,7 +34,7 @@ template "#{node["statsd"]["conf_dir"]}/config.js" do
     :graphite_port  => node["statsd"]["graphite_port"],
     :graphite_host  => node["statsd"]["graphite_host"]
   )
-  notifies :restart, resources(:service => "statsd")
+  notifies :restart, resources(:service => "statsd"), :delayed
 end
 
 
