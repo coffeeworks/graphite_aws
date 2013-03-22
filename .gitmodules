@@ -16,3 +16,6 @@
 [submodule "logrotate"]
 	path = logrotate
 	url = git://github.com/opscode-cookbooks/logrotate.git
+[submodule "python"]
+	path = python
+	url = git://github.com/opscode-cookbooks/python.git
