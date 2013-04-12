@@ -46,11 +46,14 @@ execute "install carbon" do
   cwd "#{Chef::Config[:file_cache_path]}/carbon-#{version}"
 end
 
+service_type = node['graphite']['carbon']['service_type']
+include_recipe "#{cookbook_name}::#{recipe_name}_#{service_type}"
+
 case node['graphite']['carbon']['service_type']
 when "runit"
-  carbon_cache_service_resource = "runit_service[carbon-cache]"
+  carbon_cache_service_resource = resources(:runit_service => "carbon-cache")
 else
-  carbon_cache_service_resource = "service[carbon-cache]"
+  carbon_cache_service_resource = resources(:service => "carbon-cache")
 end
 
 template "#{node['graphite']['base_dir']}/conf/carbon.conf" do
@@ -106,6 +109,3 @@ directory "#{node['graphite']['base_dir']}/lib/twisted/plugins/" do
   group node['apache']['group']
   recursive true
 end
-
-service_type = node['graphite']['carbon']['service_type']
-include_recipe "#{cookbook_name}::#{recipe_name}_#{service_type}"
