@@ -6,7 +6,7 @@ end
 
 python_pip "zope.interface" do
   action :install
-  only_if { platform_family?("rhel") }
+  only_if { node['platform_family'] == "rhel" }
 end
 
 service "carbon-cache" do
