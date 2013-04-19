@@ -1,103 +1,72 @@
-#
-# Cookbook Name:: graphite
-# Recipe:: carbon
-#
-# Copyright 2011, Heavy Water Software Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
-package "python-twisted"
-package "python-simplejson"
-
-if node['graphite']['carbon']['enable_amqp']
-  python_pip "txamqp" do
-    action :install
-  end
+python_pip "carbon" do
+  version node["graphite"]["version"]
+  options %Q{--install-option="--prefix=#{node['graphite']['home']}" --install-option="--install-lib=#{node['graphite']['home']}/lib"}
+  action :install
 end
 
-version = node['graphite']['version']
-pyver = node['languages']['python']['version'][0..-3]
-
-remote_file "#{Chef::Config[:file_cache_path]}/carbon-#{version}.tar.gz" do
-  source node['graphite']['carbon']['uri']
-  checksum node['graphite']['carbon']['checksum']
+python_pip "zope.interface" do
+  action :install
+  only_if { platform_family?("rhel") }
 end
 
-execute "untar carbon" do
-  command "tar xzf carbon-#{version}.tar.gz"
-  creates "#{Chef::Config[:file_cache_path]}/carbon-#{version}"
-  cwd Chef::Config[:file_cache_path]
+service "carbon-cache" do
+  provider Chef::Provider::Service::Upstart
+  action [ :enable, :start ]
 end
 
-execute "install carbon" do
-  command "python setup.py install"
-  creates "#{node['graphite']['base_dir']}/lib/carbon-#{version}-py#{pyver}.egg-info"
-  cwd "#{Chef::Config[:file_cache_path]}/carbon-#{version}"
-end
+template "#{node['graphite']['home']}/conf/carbon.conf" do
+  mode "0644"
+  source "carbon.conf.erb"
+  owner node["apache"]["user"]
+  group node["apache"]["group"]
+  variables(
+    :whisper_dir                => "#{node["graphite"]["storage_dir"]}/whisper",
+    :line_receiver_interface    => node["graphite"]["carbon"]["line_receiver_interface"],
+    :pickle_receiver_interface  => node["graphite"]["carbon"]["pickle_receiver_interface"],
+    :cache_query_interface      => node["graphite"]["carbon"]["cache_query_interface"],
+    :log_updates                => node["graphite"]["carbon"]["log_updates"]
+  )
 
-include_recipe "graphite::carbon_runit"
-
-template "#{node['graphite']['base_dir']}/conf/carbon.conf" do
-  owner node['apache']['user']
-  group node['apache']['group']
-  variables( :line_receiver_interface => node['graphite']['carbon']['line_receiver_interface'],
-             :line_receiver_port => node['graphite']['carbon']['line_receiver_port'],
-             :pickle_receiver_interface => node['graphite']['carbon']['pickle_receiver_interface'],
-             :pickle_receiver_port => node['graphite']['carbon']['pickle_receiver_port'],
-             :cache_query_interface => node['graphite']['carbon']['cache_query_interface'],
-             :cache_query_port => node['graphite']['carbon']['cache_query_port'],
-             :max_cache_size => node['graphite']['carbon']['max_cache_size'],
-             :max_updates_per_second => node['graphite']['carbon']['max_updates_per_second'],
-             :max_creates_per_second => node['graphite']['carbon']['max_creates_per_second'],
-             :log_whisper_updates => node['graphite']['carbon']['log_whisper_updates'],
-             :enable_amqp => node['graphite']['carbon']['enable_amqp'],
-             :amqp_host => node['graphite']['carbon']['amqp_host'],
-             :amqp_port => node['graphite']['carbon']['amqp_port'],
-             :amqp_vhost => node['graphite']['carbon']['amqp_vhost'],
-             :amqp_user => node['graphite']['carbon']['amqp_user'],
-             :amqp_password => node['graphite']['carbon']['amqp_password'],
-             :amqp_exchange => node['graphite']['carbon']['amqp_exchange'],
-             :amqp_metric_name_in_body => node['graphite']['carbon']['amqp_metric_name_in_body'],
-             :storage_dir => node['graphite']['storage_dir'])
   notifies :restart, resources(:service => "carbon-cache")
 end
 
-template "#{node['graphite']['base_dir']}/conf/storage-schemas.conf" do
-  owner node['apache']['user']
-  group node['apache']['group']
+template "#{node['graphite']['home']}/conf/storage-schemas.conf" do
+  mode "0644"
+  source "storage-schemas.conf.erb"
+  owner node["apache"]["user"]
+  group node["apache"]["group"]
+  notifies :restart, resources(:service => "carbon-cache")
 end
 
-template "#{node['graphite']['base_dir']}/conf/storage-aggregation.conf" do
-  owner node['apache']['user']
-  group node['apache']['group']
+template "#{node['graphite']['home']}/conf/storage-aggregation.conf" do
+  mode "0644"
+  source "storage-aggregation.conf.erb"
+  owner node["apache"]["user"]
+  group node["apache"]["group"]
+  notifies :restart, resources(:service => "carbon-cache")
 end
 
-directory node['graphite']['storage_dir'] do
-  owner node['apache']['user']
-  group node['apache']['group']
-  recursive true
-end
-
-%w{ log whisper }.each do |dir|
-  directory "#{node['graphite']['storage_dir']}/#{dir}" do
-    owner node['apache']['user']
-    group node['apache']['group']
+execute "chown" do
+  command "chown -R #{node["apache"]["user"]}:#{node["apache"]["group"]} #{node["graphite"]["storage_dir"]}"
+  only_if do
+    f = File.stat("#{node['graphite']['storage_dir']}")
+    f.uid == 0 && f.gid == 0
   end
 end
 
-directory "#{node['graphite']['base_dir']}/lib/twisted/plugins/" do
-  owner node['apache']['user']
-  group node['apache']['group']
-  recursive true
+template "/etc/init/carbon-cache.conf" do
+  mode "0644"
+  source "carbon-cache.conf.erb"
+  variables(
+    :home => node["graphite"]["home"],
+    :version => node["graphite"]["version"]
+  )
+end
+
+logrotate_app "carbon" do
+  cookbook "logrotate"
+  path "#{node['graphite']['storage_dir']}/log/carbon-cache/carbon-cache-a/*.log"
+  frequency "daily"
+  rotate 7
+  create "644 root root"
 end

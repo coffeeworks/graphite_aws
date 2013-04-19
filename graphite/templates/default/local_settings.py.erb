@@ -12,12 +12,12 @@
 TIME_ZONE = '<%= @timezone %>'
 
 # Override this to provide documentation specific to your Graphite deployment
-DOCUMENTATION_URL = "http://graphite.readthedocs.org/"
+#DOCUMENTATION_URL = "http://graphite.readthedocs.org/"
 
 # Logging
-LOG_RENDERING_PERFORMANCE = True
-LOG_CACHE_PERFORMANCE = True
-LOG_METRIC_ACCESS = True
+#LOG_RENDERING_PERFORMANCE = True
+#LOG_CACHE_PERFORMANCE = True
+#LOG_METRIC_ACCESS = True
 
 # Enable full debug page display on exceptions (Internal Server Error pages)
 #DEBUG = True
@@ -34,37 +34,40 @@ LOG_METRIC_ACCESS = True
 # You should not use the loopback address (127.0.0.1) here if using clustering
 # as every webapp in the cluster should use the exact same values to prevent
 # unneeded cache misses. Set to [] to disable caching of images and fetched data
-MEMCACHE_HOSTS = ['127.0.0.1:11211']
+<% unless @memcache_hosts.empty? %>
+MEMCACHE_HOSTS = ['<%= @memcache_hosts.join("', '") %>']
+<% end %>
 #DEFAULT_CACHE_DURATION = 60 # Cache images and data for 1 minute
 
 
 #####################################
 # Filesystem Paths #
 #####################################
-# Change only GRAPHITE_ROOT if your install is merely shifted from /opt/graphite
+# Change only GRAPHITE_ROOT if your install is merely shifted from <%= @home %>
 # to somewhere else
-GRAPHITE_ROOT = '<%= @base_dir %>'
-# Most installs done outside of a separate tree such as /opt/graphite will only
+#GRAPHITE_ROOT = '<%= @home %>'
+
+# Most installs done outside of a separate tree such as <%= @home %> will only
 # need to change these three settings. Note that the default settings for each
 # of these is relative to GRAPHITE_ROOT
-CONF_DIR = '<%= @base_dir %>/conf'
-STORAGE_DIR = '<%= @storage_dir %>'
-CONTENT_DIR = '<%= @doc_root %>/content'
+#CONF_DIR = '<%= @home %>/conf'
+#STORAGE_DIR = '<%= @home %>/storage'
+#CONTENT_DIR = '<%= @home %>/webapp/content'
 
 # To further or fully customize the paths, modify the following. Note that the
 # default settings for each of these are relative to CONF_DIR and STORAGE_DIR
 #
 ## Webapp config files
-DASHBOARD_CONF = '<%= @base_dir %>/conf/dashboard.conf'
-GRAPHTEMPLATES_CONF = '<%= @base_dir %>/conf/graphTemplates.conf'
+#DASHBOARD_CONF = '<%= @home %>/conf/dashboard.conf'
+#GRAPHTEMPLATES_CONF = '<%= @home %>/conf/graphTemplates.conf'
 
 ## Data directories
 # NOTE: If any directory is unreadable in DATA_DIRS it will break metric browsing
-WHISPER_DIR = '<%= @storage_dir %>/whisper'
-RRD_DIR = '<%= @storage_dir %>/rrd'
-DATA_DIRS = [WHISPER_DIR, RRD_DIR] # Default: set from the above variables
-LOG_DIR = '<%= @storage_dir %>/log/webapp'
-INDEX_FILE = '<%= @storage_dir %>/index'  # Search index file
+WHISPER_DIR = '<%= @whisper_dir %>'
+#RRD_DIR = '/opt/graphite/storage/rrd'
+#DATA_DIRS = [WHISPER_DIR, RRD_DIR] # Default: set from the above variables
+#LOG_DIR = '<%= @home %>/storage/log/webapp'
+#INDEX_FILE = '<%= @home %>/storage/index'  # Search index file
 
 
 #####################################
@@ -89,6 +92,7 @@ INDEX_FILE = '<%= @storage_dir %>/index'  # Search index file
 #USE_LDAP_AUTH = True
 #LDAP_SERVER = "ldap.mycompany.com"
 #LDAP_PORT = 389
+#	OR
 #LDAP_URI = "ldaps://ldap.mycompany.com:636"
 #LDAP_SEARCH_BASE = "OU=users,DC=mycompany,DC=com"
 #LDAP_BASE_USER = "CN=some_readonly_account,DC=mycompany,DC=com"
@@ -136,16 +140,16 @@ INDEX_FILE = '<%= @storage_dir %>/index'  # Search index file
 #
 # Users with Django 1.2 or greater should use the new dictionary
 # specification as the old database specification style is removed in 1.4
-#DATABASES = {
-#    'default': {
-#        'NAME': '<%= @storage_dir %>/graphite.db',
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'USER': '',
-#        'PASSWORD': '',
-#        'HOST': '',
-#        'PORT': ''
-#    }
-#}
+DATABASES = {
+    'default': {
+        'NAME': '<%= @home %>/storage/graphite.db',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': ''
+    }
+}
 #
 # Users still on Django 1.1 must use the old method instead:
 #DATABASE_ENGINE = 'django.db.backends.mysql'

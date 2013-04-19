@@ -1,25 +1,18 @@
-name             "graphite"
-maintainer       "Heavy Water Software Inc."
-maintainer_email "ops@hw-ops.com"
-license          "Apache 2.0"
-description      "Installs/Configures graphite"
-long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          "0.4.2"
+name              "graphite"
+maintainer        "Hector Castro"
+maintainer_email  "hectcastro@gmail.com"
+license           "Apache 2.0"
+description       "Installs and configures Graphite."
+version           "0.1.2"
+recipe            "graphite", "Installs and configures Graphite and all of its components"
+recipe            "graphite::carbon", "Installs and configures Carbon"
+recipe            "graphite::dashboard", "Installs and configures the Graphite dashboard"
+recipe            "graphite::whisper", "Installs and configures Whisper"
 
-supports "ubuntu"
-supports "debian"
-supports "redhat"
-supports "centos"
-supports "amazon"
-supports "scientific"
-supports "oracle"
-supports "fedora"
+%w{ apache2 logrotate python yum build-essential }.each do |d|
+  depends d
+end
 
-depends  "python"
-depends  "apache2"
-depends  "runit", "~> 1.0"
-depends  "memcached"
-
-suggests "systemd"
-suggests "s6"
-suggests "graphiti"
+%w{ centos redhat ubuntu amazon }.each do |os|
+    supports os
+end

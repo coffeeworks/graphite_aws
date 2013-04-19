@@ -1,68 +1,74 @@
-Description
-===========
+# graphite [![Build Status](https://secure.travis-ci.org/hectcastro/chef-graphite.png?branch=master)](http://travis-ci.org/hectcastro/chef-graphite)
 
-Installs and configures Graphite http://graphite.wikidot.com/
+## Description
 
-Requirements
-============
+Installs and configures Graphite.  Much of the work in this cookbook reflects
+work done by [Heavy Water Software](https://github.com/heavywater/chef-graphite)
+and [Infochimps](https://github.com/infochimps-labs/ironfan-pantry/blob/master/cookbooks/graphite).
 
-* Ubuntu 10.04 / Ubuntu 12.04
-* Debian
-* RHEL and derivatives (Centos, Amazon Linux, Oracle Linux, Scientific Linux)
-* Fedora
+## Requirements
 
-Attributes
-==========
+### Platforms
 
-* `node['graphite']['version']` - version of graphite to install (defaults to 0.9.10)
-* `node['graphite']['password']` - password for graphite root user(default to `change_me` and is only used if encrypted databag isn't)
-* `node['graphite']['url']` - url of the graphite server (defaults to graphite)
-* `node['graphite']['url_aliases']` - array of url aliases (defaults to nil)
-* `node['graphite']['listen_port']` - port to listen on (defaults to 80)
-* `node['graphite']['base_dir']` = "/opt/graphite"
-* `node['graphite']['doc_root']` = "/opt/graphite/webapp"
-* `node['graphite']['storage_dir']` = "/opt/graphite/storage"
-* `node['graphite']['django_root']` = "@DJANGO_ROOT@" - configurable path to your django installation
-* `node['graphite']['timezone']` - Set the timezone for the graphite web interface, defaults to America/Los_Angeles
+* Amazon Linux 2013.03
+* CentOS 6
+* Red Hat 6
+* Ubuntu 11.10 (Oneiric)
+* Ubuntu 12.04 (Precise)
 
-* `node['graphite']['whisper']['uri']` - download url for whisper
-* `node['graphite']['whisper']['checksum']` - checksum of the whisper download
+### Cookbooks
 
-* `node['graphite']['graphite_web']['uri']` - download url for the graphite web ui
-* `node['graphite']['graphite_web']['checksum']` - checksum for the graphite web ui download
+* apache2
+* build-essential
+* logrotate
+* python
+* yum
 
-* `node['graphite']['carbon']['uri']` - download url for carbon
-* `node['graphite']['carbon']['checksum']` - checksum for the carbon download
-* `node['graphite']['carbon']['line_receiver_interface']` - line interface IP (defaults to 0.0.0.0)
-* `node['graphite']['carbon']['line_receiver_port']` - line interface port (defaults to 2003)
-* `node['graphite']['carbon']['pickle_receiver_interface']` - pickle receiver IP (defaults to 0.0.0.0)
-* `node['graphite']['carbon']['pickle_receiver_port']` - pickle receiver port (defaults to 2004)
-* `node['graphite']['carbon']['cache_query_interface']` - cache query IP (defaults to 0.0.0.0)
-* `node['graphite']['carbon']['cache_query_port']` - cache query port (defaults to 7002)
-* `node['graphite']['carbon']['max_cache_size']` - max size of the carbon cache (defaults to "inf")
-* `node['graphite']['carbon']['max_creates_per_second']` - max number of new metrics to create per second (defaults to "inf")
-* `node['graphite']['carbon']['max_updates_per_second']` - max updates to carbon per second (defaults to "1000")
-* `node['graphite']['carbon']['service_type']` - init service to use for carbon (defaults to runit)
-* `node['graphite']['carbon']['log_whisper_updates']` - log updates to whisper (defaults to false)
+## Attributes
 
-* `node['graphite']['encrypted_data_bag']['name']` - The name of the encrypted data bag containing the default password for
-the graphite "root" user.  If this attribute is set it will not use `node['graphite']['password']`.
+* `node["graphite"]["version"]` - Version of Graphite to install.
+* `node["graphite"]["home"]` - Prefix install directory for Graphite.
+* `node["graphite"]["user"]` - User for Graphite and its components.
+* `node["graphite"]["group"]` - Group for Graphite and its components.
+* `node["graphite"]["carbon"]["line_receiver_interface"]` - IP for the line
+  receiver to bind to.
+* `node["graphite"]["carbon"]["pickle_receiver_interface"]` - IP for the pickle
+  receiver to bind to.
+* `node["graphite"]["carbon"]["cache_query_interface"]` - IP for the query
+  cache to bind to.
+* `node["graphite"]["carbon"]["log_updates"]` - Enable/disable Carbon logging.
+* `node["graphite"]["carbon"]["whisper_dir"]` - Location of whisper data files.
+* `node["graphite"]["dashboard"]["timezone"]` - Default dashboard timezone.
+* `node["graphite"]["dashboard"]["memcache_hosts"]` - Array of IP and port pairs
+  for memcached.
+* `node["graphite"]["templates"]` - Additional template defintions
+* `node["graphite"]["storage_schemas"]` - Array of hashes that define a storage
+  schema.  See default attributes for an example.
+* `node["graphite"]["storage_aggregation"]` – Array of hashes that define
+  storage aggregation.  See default attributes for an example.
 
+### Default Template Definition
 
-Data Bags
-=========
+* `default["graphite"]["templates"]["default"]["background"]`   = "black"
+* `default["graphite"]["templates"]["default"]["foreground"]`   = "white"
+* `default["graphite"]["templates"]["default"]["majorLine"]`    = "white"
+* `default["graphite"]["templates"]["default"]["minorLine"]`    = "grey"
+* `default["graphite"]["templates"]["default"]["lineColors"]`   = "blue,green,red,purple,brown,yellow,aqua,grey,magenta,pink,gold,rose"
+* `default["graphite"]["templates"]["default"]["fontName"]`     = "Sans"
+* `default["graphite"]["templates"]["default"]["fontSize"]`     = "10"
+* `default["graphite"]["templates"]["default"]["fontBold"]`     = "False"
+* `default["graphite"]["templates"]["default"]["fontItalic"]`   = "False"
 
-This cookbook optionally uses an encrypted data bag to store the graphite password.
-If this data bag is not present the cookbook will use `node['graphite']['password']`
-instead.  To use the encrypted data bag set `node['graphite']['encrypted_data_bag']['name']`
-with the name of the data bag you wish to use.
+## Recipes
 
+* `recipe[graphite]` will install Graphite and all of its components.
+* `recipe[graphite::carbon]` will install Carbon.
+* `recipe[graphite::dashboard]` will install Graphite's dashboard.
+* `recipe[graphite::whisper]` will install Whisper.
 
-Usage
-=====
+## Usage
 
-`recipe[graphite]` should build a stand-alone Graphite installation.
-
-`recipe[graphite::ganglia]` integrates with Ganglia. You'll want at
-least one monitor node (i.e. recipe[ganglia]) node to be running
-to use it.
+Graphite's credentials default to username `root` and password `root` with an
+e-mail address going no where.  Also, two schemas are provided by default:
+`stats.*` for [StatsD](https://github.com/etsy/statsd) and a catchall that
+matches anything.

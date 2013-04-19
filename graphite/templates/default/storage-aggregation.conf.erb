@@ -1,3 +1,4 @@
-[stats_counts]
-pattern = ^stats_counts\..*
-aggregationMethod = sum
+
+<% unless node['graphite']['storage_aggregation'].empty? -%>
+  <%= GraphiteConf.section_to_str(node['graphite']['storage_aggregation']) %>
+<% end -%>
