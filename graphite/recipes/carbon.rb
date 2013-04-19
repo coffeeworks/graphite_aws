@@ -46,15 +46,7 @@ execute "install carbon" do
   cwd "#{Chef::Config[:file_cache_path]}/carbon-#{version}"
 end
 
-service_type = node['graphite']['carbon']['service_type']
-include_recipe "#{cookbook_name}::#{recipe_name}_#{service_type}"
-
-case node['graphite']['carbon']['service_type']
-when "runit"
-  carbon_cache_service_resource = resources(:runit_service => "carbon-cache")
-else
-  carbon_cache_service_resource = resources(:service => "carbon-cache")
-end
+include_recipe "graphite::carbon_runit"
 
 template "#{node['graphite']['base_dir']}/conf/carbon.conf" do
   owner node['apache']['user']
@@ -78,7 +70,7 @@ template "#{node['graphite']['base_dir']}/conf/carbon.conf" do
              :amqp_exchange => node['graphite']['carbon']['amqp_exchange'],
              :amqp_metric_name_in_body => node['graphite']['carbon']['amqp_metric_name_in_body'],
              :storage_dir => node['graphite']['storage_dir'])
-  notifies :restart, carbon_cache_service_resource
+  notifies :restart, resources(:service => "carbon-cache")
 end
 
 template "#{node['graphite']['base_dir']}/conf/storage-schemas.conf" do
