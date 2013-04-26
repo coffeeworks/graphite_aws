@@ -59,7 +59,7 @@ web_app "graphite" do
   graphite_home node["graphite"]["home"]
 end
 
-directory "#{node['graphite']['storage_dir']}/log" do
+directory "#{node['graphite']['home']}/log" do
   owner node["apache"]["user"]
   group node["apache"]["group"]
 end
@@ -69,7 +69,7 @@ directory node['graphite']['carbon']['whisper_dir'] do
   group node["apache"]["group"]
 end
 
-directory "#{node['graphite']['storage_dir']}/log/webapp" do
+directory "#{node['graphite']['home']}/log/webapp" do
   owner node["apache"]["user"]
   group node["apache"]["group"]
 end
@@ -82,7 +82,7 @@ end
 
 logrotate_app "dashboard" do
   cookbook "logrotate"
-  path "#{node['graphite']['storage_dir']}/log/webapp/*.log"
+  path "#{node['graphite']['home']}/log/webapp/*.log"
   frequency "daily"
   rotate 7
   create "644 root root"
