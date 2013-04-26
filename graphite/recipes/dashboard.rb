@@ -42,6 +42,7 @@ template "#{node['graphite']['home']}/webapp/graphite/local_settings.py" do
   variables(
     :home           => node["graphite"]["home"],
     :whisper_dir    => node["graphite"]["carbon"]["whisper_dir"],
+    :storage_dir    => node["graphite"]["storage_dir"],
     :timezone       => node["graphite"]["dashboard"]["timezone"],
     :memcache_hosts => node["graphite"]["dashboard"]["memcache_hosts"]
   )

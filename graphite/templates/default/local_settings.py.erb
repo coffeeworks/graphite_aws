@@ -142,7 +142,7 @@ LOG_DIR = '<%= @home %>/log/webapp'
 # specification as the old database specification style is removed in 1.4
 DATABASES = {
     'default': {
-        'NAME': '<%= @home %>/storage/graphite.db',
+        'NAME': '<%= @storage_dir %>/graphite.db',
         'ENGINE': 'django.db.backends.sqlite3',
         'USER': '',
         'PASSWORD': '',
