@@ -1,6 +1,6 @@
 default["graphite"]["version"]                              = "0.9.10"
 default["graphite"]["home"]                                 = "/opt/graphite"
-default['graphite']['storage_dir']                          = "/opt/graphite/storage"
+default['graphite']['storage_dir']                          = "/vol/graphite/storage"
 default["graphite"]["carbon"]["line_receiver_interface"]    = "127.0.0.1"
 default["graphite"]["carbon"]["pickle_receiver_interface"]  = "127.0.0.1"
 default["graphite"]["carbon"]["cache_query_interface"]      = "127.0.0.1"
