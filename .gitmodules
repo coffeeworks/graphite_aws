@@ -16,6 +16,3 @@
 [submodule "python"]
 	path = python
 	url = git://github.com/opscode-cookbooks/python.git
-[submodule "skyline"]
-	path = skyline
-	url = https://github.com/bflad/chef-skyline.git
