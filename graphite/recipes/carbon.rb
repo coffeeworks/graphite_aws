@@ -14,7 +14,18 @@ template "/etc/init/carbon-cache.conf" do
   source "carbon-cache.conf.erb"
   variables(
     :home => node["graphite"]["home"],
-    :version => node["graphite"]["version"]
+    :version => node["graphite"]["version"],
+    :skyline_horizon_ip => node["skyline"]["horizon"]["horizon_ip"],
+    :skyline_horizon_port => node["skyline"]["horizon"]["pickle_port"]
+  )
+end
+
+template "/etc/init/relay-rules.conf" do
+  mode "0644"
+  source "relay-rules.conf.erb"
+  variables(
+    :skyline_horizon_ip => node["skyline"]["horizon"]["horizon_ip"],
+    :skyline_horizon_port => node["skyline"]["horizon"]["pickle_port"]
   )
 end
 

@@ -12,3 +12,9 @@ CACHE_QUERY_INTERFACE = <%= @cache_query_interface %>
 CACHE_QUERY_PORT = 7002
 LOG_DIR = <%= @log_dir %>
 LOG_UPDATES = <%= @log_updates ? "True" : "False" %>
+
+[relay]
+RELAY_METHOD = rules
+DESTINATIONS = 127.0.0.1:2004, 127.0.0.1:2014, <%= @skyline_horizon_ip %>:<%= @skyline_horizon_port %>
+USE_FLOW_CONTROL = False
+MAX_QUEUE_SIZE = 5000
