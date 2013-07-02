@@ -1,0 +1,7 @@
+[all]
+pattern = .*
+destinations = 127.0.0.1:2014, <%= @skyline_horizon_ip %>:<%= @skyline_horizon_port %>
+
+[default]
+default = true
+destinations = 127.0.0.1:2014:a, <%= @skyline_horizon_ip %>:<%= @skyline_horizon_port %>:a
