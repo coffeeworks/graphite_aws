@@ -1,3 +1,18 @@
 [submodule "statsd"]
 	path = statsd
 	url = https://github.com/librato/statsd-cookbook.git
+[submodule "nodejs"]
+	path = nodejs
+	url = https://github.com/mdxp/nodejs-cookbook.git
+[submodule "python"]
+	path = python
+	url = https://github.com/poise/python.git
+[submodule "logrotate"]
+	path = logrotate
+	url = https://github.com/stevendanna/logrotate
+[submodule "build-essential"]
+	path = build-essential
+	url = https://github.com/opscode-cookbooks/build-essential.git
+[submodule "apt"]
+	path = apt
+	url = https://github.com/opscode-cookbooks/apt
