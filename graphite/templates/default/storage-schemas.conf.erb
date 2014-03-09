@@ -1,0 +1,4 @@
+
+<% unless node['graphite']['storage_schemas'].empty? -%>
+  <%= GraphiteConf.section_to_str(node['graphite']['storage_schemas']) %>
+<% end -%>
