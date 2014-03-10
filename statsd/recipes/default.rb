@@ -6,7 +6,7 @@
 #
 
 include_recipe "nodejs"
-include_recipe "git"
+#include_recipe "git"
 
 git "/usr/share/statsd" do
   repository node[:statsd][:repo]
