@@ -4,6 +4,19 @@ python_pip "carbon" do
   action :install
 end
 
+python_pip "daemonize" do
+  action :install
+end
+
+ruby_block "Fix carbon cannot import daemonize" do
+  block do
+    fe = Chef::Util::FileEdit.new("#{node['graphite']['home']}/lib/carbon/util.py")
+    fe.search_file_replace(/from twisted.scripts._twistd_unix import daemonize/,
+                               "import daemonize")
+    fe.write_file
+  end
+end
+
 python_pip "zope.interface" do
   action :install
 end
