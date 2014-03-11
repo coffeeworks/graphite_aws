@@ -1,10 +1,11 @@
 default["graphite"]["version"]                              = "0.9.10"
 default["graphite"]["home"]                                 = "/opt/graphite"
+default['graphite']['storage_dir']                          = "/vol/graphite/storage"
 default["graphite"]["carbon"]["line_receiver_interface"]    = "127.0.0.1"
 default["graphite"]["carbon"]["pickle_receiver_interface"]  = "127.0.0.1"
 default["graphite"]["carbon"]["cache_query_interface"]      = "127.0.0.1"
 default["graphite"]["carbon"]["log_updates"]                = true
-default["graphite"]["carbon"]["whisper_dir"]                = "#{node["graphite"]["home"]}/storage/whisper"
+default["graphite"]["carbon"]["whisper_dir"]                = "#{default['graphite']['storage_dir']}/whisper"
 default["graphite"]["carbon"]["max_cache_size"]             = "inf"
 default["graphite"]["carbon"]["max_creates_per_minute"]     = "inf"
 default["graphite"]["carbon"]["max_updates_per_second"]     = "1000"

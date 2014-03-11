@@ -42,6 +42,7 @@ template "#{node['graphite']['home']}/webapp/graphite/local_settings.py" do
   variables(
     :home           => node["graphite"]["home"],
     :whisper_dir    => node["graphite"]["carbon"]["whisper_dir"],
+    :storage_dir    => node["graphite"]["storage_dir"],
     :timezone       => node["graphite"]["dashboard"]["timezone"],
     :memcache_hosts => node["graphite"]["dashboard"]["memcache_hosts"],
     :mysql_server   => node["graphite"]["dashboard"]["mysql_server"],
@@ -63,7 +64,12 @@ web_app "graphite" do
   graphite_home node["graphite"]["home"]
 end
 
-directory "#{node['graphite']['home']}/storage/log" do
+directory "#{node['graphite']['home']}/log" do
+  owner node["apache"]["user"]
+  group node["apache"]["group"]
+end
+
+directory node['graphite']['storage_dir'] do
   owner node["apache"]["user"]
   group node["apache"]["group"]
 end
@@ -73,12 +79,12 @@ directory node['graphite']['carbon']['whisper_dir'] do
   group node["apache"]["group"]
 end
 
-directory "#{node['graphite']['home']}/storage/log/webapp" do
+directory "#{node['graphite']['home']}/log/webapp" do
   owner node["apache"]["user"]
   group node["apache"]["group"]
 end
 
-cookbook_file "#{node['graphite']['home']}/storage/graphite.db" do
+cookbook_file "#{node['graphite']['storage_dir']}/graphite.db" do
   owner node["apache"]["user"]
   group node["apache"]["group"]
   action :create_if_missing

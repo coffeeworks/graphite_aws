@@ -51,7 +51,7 @@ MEMCACHE_HOSTS = ['<%= @memcache_hosts.join("', '") %>']
 # need to change these three settings. Note that the default settings for each
 # of these is relative to GRAPHITE_ROOT
 #CONF_DIR = '<%= @home %>/conf'
-#STORAGE_DIR = '<%= @home %>/storage'
+STORAGE_DIR = '<%= @storage_dir %>'
 #CONTENT_DIR = '<%= @home %>/webapp/content'
 
 # To further or fully customize the paths, modify the following. Note that the
@@ -142,7 +142,7 @@ WHISPER_DIR = '<%= @whisper_dir %>'
 # specification as the old database specification style is removed in 1.4
 DATABASES = {
     'default': {
-        'NAME': '<%= @home %>/storage/graphite.db',
+        'NAME': '<%= @storage_dir %>/graphite.db',
         'ENGINE': 'django.db.backends.sqlite3',
         'USER': '<%= @mysql_username %>',
         'PASSWORD': '<%= @mysql_password %>',
