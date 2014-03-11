@@ -1,8 +1,8 @@
 <VirtualHost *:80>
   ServerName <%= @params[:server_name] %>
   DocumentRoot <%= @params[:docroot] %>
-  ErrorLog <%= @params[:graphite_home] %>/storage/log/webapp/error.log
-  CustomLog <%= @params[:graphite_home] %>/storage/log/webapp/access.log common
+  ErrorLog <%= @params[:graphite_home] %>/log/webapp/error.log
+  CustomLog <%= @params[:graphite_home] %>/log/webapp/access.log common
 
   Header set Access-Control-Allow-Origin "*"
   Header set Access-Control-Allow-Methods "GET, OPTIONS"

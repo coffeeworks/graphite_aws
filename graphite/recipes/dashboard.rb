@@ -92,7 +92,7 @@ end
 
 logrotate_app "dashboard" do
   cookbook "logrotate"
-  path "#{node['graphite']['home']}/storage/log/webapp/*.log"
+  path "#{node['graphite']['home']}/log/webapp/*.log"
   frequency "daily"
   rotate 7
   create "644 root root"

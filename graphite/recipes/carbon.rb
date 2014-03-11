@@ -31,6 +31,7 @@ template "#{node['graphite']['home']}/conf/carbon.conf" do
     :line_receiver_interface    => node["graphite"]["carbon"]["line_receiver_interface"],
     :pickle_receiver_interface  => node["graphite"]["carbon"]["pickle_receiver_interface"],
     :cache_query_interface      => node["graphite"]["carbon"]["cache_query_interface"],
+    :log_dir                    => "#{node['graphite']['home']}/log",
     :log_updates                => node["graphite"]["carbon"]["log_updates"],
     :max_cache_size             => node["graphite"]["carbon"]["max_cache_size"],
     :max_creates_per_minute     => node["graphite"]["carbon"]["max_creates_per_minute"],
@@ -74,7 +75,7 @@ end
 
 logrotate_app "carbon" do
   cookbook "logrotate"
-  path "#{node['graphite']['home']}/storage/log/carbon-cache/carbon-cache-a/*.log"
+  path "#{node['graphite']['home']}/log/carbon-cache/carbon-cache-a/*.log"
   frequency "daily"
   rotate 7
   create "644 root root"
