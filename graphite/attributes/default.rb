@@ -30,8 +30,15 @@ default["graphite"]["templates"]["default"]["fontItalic"]   = "False"
 default["graphite"]["storage_schemas"] = [
   {
     :stats => {
-      :priority   => "100",
+      :priority   => "80",
       :pattern    => "^stats\\..*",
+      :retentions => "10s:7d,1m:31d,10m:5y"
+    }
+  },
+  {
+    :stats_counts => {
+      :priority   => "100",
+      :pattern    => "^stats_counts\\..*",
       :retentions => "10s:7d,1m:31d,10m:5y"
     }
   },
@@ -63,6 +70,13 @@ default["graphite"]["storage_aggregation"] = [
   {
     :sum => {
       :pattern            => "\\.count$",
+      :xFilesFactor       => "0",
+      :aggregationMethod  => "sum"
+    }
+  },
+  {
+    :counts => {
+      :pattern            => "^stats_counts\\..*",
       :xFilesFactor       => "0",
       :aggregationMethod  => "sum"
     }
